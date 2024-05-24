@@ -32,7 +32,7 @@ class AggregateAllPANODEData:
         count=0
         
         # declare a dataFrame object and specify columns
-        df = pd.DataFrame(columns=['#', 'SerialNumber', 'A_Measured_Bias','B_Measured_Bias','A_Set_Bias','B_Set_Bias','Designation'])
+        df = pd.DataFrame(columns=['#', 'SerialNumber', 'A_Measured_Bias','B_Measured_Bias','A_Set_Bias','B_Set_Bias','A_Diff','B_Diff','Designation'])
         
         # declare vars for lists
         Counts=[]
@@ -42,10 +42,13 @@ class AggregateAllPANODEData:
         A_Set_List=[]
         B_Set_List=[]
         Designations=[]
+        diff_as=[]
+        diff_bs=[]
         
         # gather all data and put into list
         for matfile in fileslist:
             mat = scipy.io.loadmat(matfile)
+            print("Running on " + str(matfile))
             DifferenceAllowed=1.8
             a_measured_bias=mat['Vbias'][0,0]
             b_measured_bias=mat['Vbias'][1,0]
@@ -69,11 +72,13 @@ class AggregateAllPANODEData:
             A_Set_List.append(a_set_bias)
             B_Set_List.append(b_set_bias)
             Designations.append(textString)    
-            
+            diff_as.append(tmpA)
+            diff_bs.append(tmpB)
             # increment counter
             count=count+1        
             
         data={'SerialNumber':SerialNumbers, 'A_Measured_Bias':A_Measured_List, 'B_Measured_Bias':B_Measured_List,
+                            'A_Diff':diff_as,'B_Diff':diff_bs,
                             'A_Set_Bias':A_Set_List, 'B_Set_Bias':B_Set_List, 'Designation':Designations}
         df=pd.DataFrame(data)
         return df
